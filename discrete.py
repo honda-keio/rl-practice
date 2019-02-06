@@ -6,7 +6,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--table", action="store_true")
     #parser.add_argument("--linear", action="store_true")
-    parser.add_argument("--T", type=int, default=30)
+    parser.add_argument("--T", type=int, default=100)
     parser.add_argument("--lr", type=float, default=5e-1)
     parser.add_argument("-e", "--max_epochs", type=int, default=60)
     parser.add_argument("--gamma", type=float, default=0.9)
@@ -27,7 +27,6 @@ if __name__ == "__main__":
     ob_s = env.observation_space.n
     ac_s = env.action_space.n
     Q = Q_f(ob_s, ac_s, lr, gamma)
-    print(0, Q.param())
     for i in range(max_epochs):
         states = np.zeros([T+1], dtype=np.int32)
         actions = np.zeros([T], dtype=np.int32)
@@ -46,4 +45,11 @@ if __name__ == "__main__":
                 break
         Q.update(states[:last+1], rewards[:last], actions[:last], dones[:last])
         print(i+1, last)
-        print(Q.param())
+    st = env.reset()
+    env.render()
+    for t in range(T):
+        act = Q(st).argmax()
+        st, _, d, _ = env.step(act)
+        env.render()
+        if d:
+            break
