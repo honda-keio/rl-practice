@@ -1,11 +1,10 @@
 from envs.LineEnv import LineEnv
 import numpy as np
 import argparse
+from func.linear import Q_discrete
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--table", action="store_true")
-    #parser.add_argument("--linear", action="store_true")
     parser.add_argument("--T", type=int, default=100)
     parser.add_argument("--lr", type=float, default=5e-1)
     parser.add_argument("-e", "--max_epochs", type=int, default=60)
@@ -13,10 +12,7 @@ if __name__ == "__main__":
     parser.add_argument("--epsilon", type=float, default=0.1)
     parser.add_argument("--line_length", type=int, default=10)
     args = parser.parse_args()
-    if args.table:
-        from func.table import Q as Q_f
-    else:
-        from func.linear import Q_discrete as Q_f
+        
     T = args.T
     lr = args.lr
     max_epochs = args.max_epochs
@@ -26,7 +22,7 @@ if __name__ == "__main__":
     env = LineEnv(length)
     ob_s = env.observation_space.n
     ac_s = env.action_space.n
-    Q = Q_f(ob_s, ac_s, lr, gamma)
+    Q = Q_discrete(ob_s, ac_s, lr, gamma)
     for i in range(max_epochs):
         states = np.zeros([T+1], dtype=np.int32)
         actions = np.zeros([T], dtype=np.int32)
